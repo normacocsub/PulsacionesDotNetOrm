@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using Entity;
+using Datos;
 
 [Route("api/[controller]")]
     [ApiController]
@@ -12,20 +13,25 @@ using Entity;
     {
         private readonly PersonaService _personaService;
 
-        public IConfiguration Configuration { get; }
+        
 
-        public PersonaController(IConfiguration configuration)
+        public PersonaController(PulsacionesContext context)
         {
-            Configuration = configuration;
-            string connectionString = Configuration["ConnectionStrings:DefaultConnection"];
-            _personaService = new PersonaService(connectionString);
+            _personaService = new PersonaService(context);
         }
         // GET: api/Persona​
         [HttpGet]
-        public IEnumerable<PersonaViewModel> Gets()
+        public ActionResult<PersonaViewModel> Gets()
         {
-            var personas = _personaService.ConsultarTodos().Select(p=> new PersonaViewModel(p));
-            return personas;
+            var response = _personaService.ConsultarTodos();
+            if(response.Error)
+            {
+                return BadRequest(response.Mensaje);
+            }
+            else
+            {
+                return Ok(response.Personas.Select(p=> new PersonaViewModel(p)));
+            }
         }
         // GET: api/Persona/5​
         [HttpGet("{identificacion}")]

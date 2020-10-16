@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using Datos;
+using Microsoft.EntityFrameworkCore;
 
 namespace PulsacionesDoNet
 {
@@ -55,7 +57,9 @@ namespace PulsacionesDoNet
             });
 
 
-
+            //contextos base de datos
+            string connectionString = Configuration["ConnectionStrings:DefaultConnection"];
+            services.AddDbContext<PulsacionesContext>(Context => Context.UseSqlServer(connectionString));
 
             // In production, the Angular files will be served from this directory
 

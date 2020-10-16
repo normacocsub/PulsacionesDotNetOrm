@@ -1,61 +1,87 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Datos;
 using Entity;
+
 
 namespace Logica
 {
     public class PersonaService
     {
-        private readonly ConectionManager _conexion;
-        private readonly PersonaRepository _repositorio;
+        private readonly PulsacionesContext _context;
 
-        public PersonaService(string connectionString)
+        public PersonaService(PulsacionesContext context)
         {
-            _conexion = new ConectionManager(connectionString);
-            _repositorio = new PersonaRepository(_conexion);
+            _context = context;
         }
         public GuardarPersonaResponse Guardar(Persona persona)
         {
             try{
                 persona.CalcularPulsaciones();
-                _conexion.Open();
-                _repositorio.Guardar(persona);
-                _conexion.Close();
+                _context.Personas.Add(persona);
+                _context.SaveChanges();
                 return new GuardarPersonaResponse(persona);
             }
             catch (Exception e)
 
             {
-
                 return new GuardarPersonaResponse($"Error de la Aplicacion: {e.Message}");
-
             }
 
-            finally { _conexion.Close(); }
-
         }
-            public List<Persona> ConsultarTodos()
+            public ConsultaPersonaResponse ConsultarTodos()
             {
-                _conexion.Open();
-                List<Persona> personas = _repositorio.ConsultarTodos();
-                _conexion.Close();
-                return personas;
+                try
+                {
+                    List<Persona> personas = _context.Personas.ToList();
+                    return new ConsultaPersonaResponse(personas);
+                }
+                catch(Exception e)
+                {
+                    return new ConsultaPersonaResponse($"Error en la aplicacion:  {e.Message}");
+                }
             }
 
             public Persona BuscarxIdentificacion(string identificacion)
             {
-                _conexion.Open();
-                Persona persona = _repositorio.BuscarPorIdentificacion(identificacion);
-                _conexion.Close();
+                Persona persona = _context.Personas.Find(identificacion);
                 return persona;
             }
 
             public string Eliminar(string identificacion)
             {
-                return null;
+                Persona persona = new Persona();
+                if((persona = _context.Personas.Find(identificacion))!= null)
+                {
+                    _context.Personas.Remove(persona);
+                    _context.SaveChanges();
+                    return $"Se ha eliminado la persona.";
+                }
+                else
+                {
+                    return $"No se encontro la persona. ";
+                }
             }
 
+        public class ConsultaPersonaResponse
+        {
+
+            public ConsultaPersonaResponse(List<Persona> personas)
+            {
+                Error = false;
+                Personas = personas;
+            }
+
+            public ConsultaPersonaResponse(string mensaje)
+            {
+                Error = true;
+                Mensaje = mensaje;
+            }
+            public Boolean  Error { get; set; } 
+            public string  Mensaje { get; set; }
+            public List<Persona> Personas { get; set; }
+        }
         public class GuardarPersonaResponse 
 
         {
