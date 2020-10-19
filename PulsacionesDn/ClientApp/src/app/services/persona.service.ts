@@ -26,6 +26,12 @@ export class PersonaService {
         );​
   }​
 
+  getP(persona: Persona): Observable<Persona> {​
+    return this.http.get<Persona>(this.baseUrl + 'api/Persona/' + persona.identificacion )​.pipe(​
+            tap(_ => this.handleErrorService.log('datos enviados')),​
+            catchError(this.handleErrorService.handleError<Persona>('Consulta Persona', null))​
+        );​
+  }
   post(persona: Persona): Observable<Persona> {​
     return this.http.post<Persona>(this.baseUrl + 'api/Persona', persona)​.pipe(​
             tap(_ => this.handleErrorService.log('datos enviados')),​

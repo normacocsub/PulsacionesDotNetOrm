@@ -9,18 +9,21 @@ import { Persona } from '../models/persona';
   styleUrls: ['./persona-consulta.component.css']
 })
 export class PersonaConsultaComponent implements OnInit {
-  personas:Persona[];​
+  personas: Persona[];
+  persona: Persona;
 
-  searchText:string;
+  searchText: string;
   constructor(private personaService: PersonaService) { }
 
   ngOnInit(): void {
-    
+
     this.personaService.get().subscribe(result => {
       this.personas = result;
     })
+
+
   }
 
-  
+
 
 }

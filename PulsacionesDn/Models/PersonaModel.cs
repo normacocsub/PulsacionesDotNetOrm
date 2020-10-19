@@ -18,5 +18,5 @@ public class PersonaViewModel : PersonaInputModel​
             Sexo = persona.Sexo;
             Pulsacion = persona.Pulsacion;
         }
-
+        
     }

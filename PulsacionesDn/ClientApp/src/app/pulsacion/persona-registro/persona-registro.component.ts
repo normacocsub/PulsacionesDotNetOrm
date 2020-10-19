@@ -14,7 +14,12 @@ persona: Persona;
   ngOnInit(): void {
     this.persona = new Persona;
   }
-
+  buscar()
+  {
+    this.personaService.getP(this.persona).subscribe(result => {
+      this.persona = result;
+    })
+  }
   
   add() {
     this.personaService.post(this.persona).subscribe(p=>{
